@@ -1,0 +1,21 @@
+// UPDATED CONFIG FOR MMM-TriviaQOTD
+// Replace your compliments module with this in config.js
+
+// FIRST: Comment out or remove the compliments module:
+/*
+{
+    module: "compliments",
+    position: "bottom_center"
+},
+*/
+
+// SECOND: Add this in its place:
+{
+    module: "MMM-TriviaQOTD",
+    position: "bottom_center",
+    config: {
+        updateInterval: 20000000,  // ~5.5 hours between update checks
+        animationSpeed: 1000,      // Smooth 1 second transitions
+        answerTimeout: 10000,      // Answer auto-hides after 10 seconds
+    }
+},

@@ -1,0 +1,20 @@
+{
+  "name": "mmm-triviaqotd",
+  "version": "1.0.0",
+  "description": "Magic Mirror module to display daily trivia questions from Ivy Tech website",
+  "main": "MMM-TriviaQOTD.js",
+  "scripts": {
+    "test": "echo \"No tests specified\""
+  },
+  "keywords": [
+    "magic mirror",
+    "trivia",
+    "question of the day"
+  ],
+  "author": "GeeYouEss",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
