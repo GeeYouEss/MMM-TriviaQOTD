@@ -2,13 +2,13 @@
 
 A MagicMirror² module that displays trivia questions with interactive answer reveals, configurable refresh intervals, and a smooth countdown timer. Perfect for adding educational entertainment to your smart mirror!
 
-![Question View](screenshot-question.png)
+![Question View](Screenshot_question.png)
 
-![Answer View](screenshot-answer.png)
+![Answer View](Screenshot_answer.png)
 
-![Question with Cooldown](screenshot-question-cooldown.png)
+![Question with Cooldown](Screenshot_question_cooldown.png)
 
-![New Question Button](screenshot-new-question.png)
+![New Question Button](Screenshot_new_question.png)
 
 ## Features
 
