@@ -2,6 +2,12 @@
 
 A Magic Mirror² module that displays the daily trivia question from Ivy Tech's website with an interactive toggle to reveal the answer.
 
+![Question View](screenshot-question.png)
+*Click the arrow to reveal the answer*
+
+![Answer View](screenshot-answer.png)
+*Answer auto-hides after 10 seconds or click to return to question*
+
 ## Features
 
 - 📚 Displays daily trivia question from https://sites.google.com/ivytech.edu/cae/home/trivia-questions
