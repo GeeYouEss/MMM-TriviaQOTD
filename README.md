@@ -8,7 +8,7 @@ A Magic Mirror² module that displays the daily trivia question from Ivy Tech's 
 - 🔄 Interactive toggle button to reveal/hide answer
 - ⏱️ Auto-hides answer after 10 seconds (configurable)
 - 💾 Caches trivia to reduce server load (updates daily)
-- 🚀 Optimized for Raspberry Pi 3B+
+- 🚀 Optimized for Raspberry Pi 3B+ or greater
 - 🎨 Clean, minimalist design
 
 ## Installation
@@ -62,28 +62,6 @@ Add the module to your `config/config.js` file:
 - Click the "↓ Answer" button to reveal the answer
 - The answer will automatically hide after 10 seconds, or click "↑ Question" to hide it manually
 - The trivia updates automatically once per day
-
-## Replacing the Compliments Module
-
-To replace the default "compliments" module in bottom_bar position:
-
-1. Find the compliments module in your `config.js`:
-```javascript
-{
-    module: "compliments",
-    position: "bottom_bar"
-}
-```
-
-2. Comment it out or remove it:
-```javascript
-// {
-//     module: "compliments",
-//     position: "bottom_bar"
-// }
-```
-
-3. Add the MMM-TriviaQOTD module in the same position as shown above
 
 ## Troubleshooting
 
