@@ -1,4 +1,4 @@
-/* Styling for MMM-TriviaQOTD */
+/* Styling for MMM-TriviaQOTD v2.5 */
 
 .MMM-TriviaQOTD {
     text-align: center;
@@ -23,7 +23,19 @@
     transition: opacity 0.5s ease;
 }
 
-.trivia-toggle {
+/* Button container */
+.trivia-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+/* Shared button styles */
+.trivia-toggle,
+.trivia-new-question {
     display: inline-block;
     padding: 8px 20px;
     background: rgba(255, 255, 255, 0.1);
@@ -36,15 +48,52 @@
     user-select: none;
 }
 
-.trivia-toggle:hover {
+.trivia-toggle:hover,
+.trivia-new-question:hover {
     background: rgba(255, 255, 255, 0.2);
     color: #fff;
     border-color: rgba(255, 255, 255, 0.5);
     transform: scale(1.05);
 }
 
-.trivia-toggle:active {
+.trivia-toggle:active,
+.trivia-new-question:active {
     transform: scale(0.95);
+}
+
+/* New Question button - slightly different styling */
+.trivia-new-question {
+    background: rgba(100, 150, 255, 0.15);
+    border-color: rgba(100, 150, 255, 0.4);
+}
+
+.trivia-new-question:hover {
+    background: rgba(100, 150, 255, 0.25);
+    border-color: rgba(100, 150, 255, 0.6);
+}
+
+/* Disabled state for cooldown */
+.trivia-new-question.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: rgba(100, 100, 100, 0.1);
+    border-color: rgba(100, 100, 100, 0.3);
+}
+
+.trivia-new-question.disabled:hover {
+    transform: none;
+    background: rgba(100, 100, 100, 0.1);
+    border-color: rgba(100, 100, 100, 0.3);
+}
+
+/* Timer display */
+.trivia-timer {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #888;
+    font-weight: 300;
+    font-style: italic;
+    /* No animation - updates smoothly without fade */
 }
 
 /* Loading and error states */

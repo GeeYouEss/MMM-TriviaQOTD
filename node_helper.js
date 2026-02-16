@@ -1,106 +1,96 @@
 /* Node Helper for MMM-TriviaQOTD
- * Fetches trivia question from Ivy Tech website
+ * Fetches trivia questions from API Ninjas
  * Optimized for low resource usage on Pi 3B+
  */
 
 const NodeHelper = require("node_helper");
 const axios = require("axios");
-const cheerio = require("cheerio");
 
 module.exports = NodeHelper.create({
     start: function() {
-        console.log("MMM-TriviaQOTD: Node helper started");
+        console.log("MMM-TriviaQOTD: Node helper started (API Ninjas v2.5)");
         this.cache = {
             question: null,
             answer: null,
+            category: null,
             timestamp: null
         };
     },
 
     socketNotificationReceived: function(notification, payload) {
         if (notification === "GET_TRIVIA") {
-            this.fetchTrivia();
+            this.fetchTrivia(payload.apiKey, payload.force || false);
         }
     },
 
-    fetchTrivia: function() {
+    fetchTrivia: function(apiKey, forceRefresh = false) {
         const self = this;
-        const url = "https://sites.google.com/ivytech.edu/cae/home/trivia-questions";
 
-        // Check cache (only fetch once per day)
-        const now = new Date();
-        const today = now.toDateString();
-        
-        if (this.cache.timestamp === today && this.cache.question) {
-            console.log("MMM-TriviaQOTD: Using cached trivia");
-            this.sendSocketNotification("TRIVIA_RESULT", {
-                question: this.cache.question,
-                answer: this.cache.answer
-            });
-            return;
+        // Check cache unless force refresh
+        if (!forceRefresh && this.cache.question && this.cache.timestamp) {
+            const cacheAge = Date.now() - this.cache.timestamp;
+            // If cache is less than 5 minutes old, use it (prevents duplicate calls)
+            if (cacheAge < 300000) {
+                console.log("MMM-TriviaQOTD: Using recent cache (" + Math.floor(cacheAge/1000) + "s old)");
+                this.sendSocketNotification("TRIVIA_RESULT", {
+                    question: this.cache.question,
+                    answer: this.cache.answer,
+                    category: this.cache.category
+                });
+                return;
+            }
         }
 
-        console.log("MMM-TriviaQOTD: Fetching from website...");
+        console.log("MMM-TriviaQOTD: Fetching from API Ninjas" + (forceRefresh ? " (forced)" : "") + "...");
+
+        // API Ninjas endpoint for trivia
+        const url = "https://api.api-ninjas.com/v1/trivia";
 
         axios.get(url, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; MagicMirror/1.0)'
+                'X-Api-Key': apiKey
             },
-            timeout: 15000 // 15 second timeout
+            timeout: 10000
         })
         .then(response => {
-            const html = response.data;
-            const $ = cheerio.load(html);
+            const data = response.data;
             
-            // Extract the trivia question and answer
-            const content = $('body').text();
-            
-            // Find the QOTD section - more flexible regex
-            const qotdMatch = content.match(/Trivia Question of the Day:\s*([^]*?)(?:Answer:|ANSWER:)\s*([^]*?)(?:Previous|PREVIOUS|$)/i);
-            
-            if (qotdMatch && qotdMatch[1] && qotdMatch[2]) {
-                let question = qotdMatch[1].trim();
-                let answer = qotdMatch[2].trim();
-                
-                // Clean up the question and answer (remove extra whitespace)
-                question = question.replace(/\s+/g, ' ').trim();
-                answer = answer.replace(/\s+/g, ' ').trim();
-                
-                // Limit answer length to first few sentences if too long
-                if (answer.length > 300) {
-                    const sentences = answer.match(/[^.!?]+[.!?]+/g);
-                    if (sentences && sentences.length > 0) {
-                        answer = sentences.slice(0, 2).join(' ').trim();
-                    }
-                }
+            // API returns an array of questions, we'll use the first one
+            if (data && data.length > 0) {
+                const triviaItem = data[0];
+                const question = triviaItem.question;
+                const answer = triviaItem.answer;
+                const category = triviaItem.category || "General Knowledge";
                 
                 // Cache the result
                 self.cache = {
                     question: question,
                     answer: answer,
-                    timestamp: today
+                    category: category,
+                    timestamp: Date.now()
                 };
                 
                 console.log("MMM-TriviaQOTD: Successfully fetched trivia");
-                console.log("MMM-TriviaQOTD: Question: " + question.substring(0, 50) + "...");
+                console.log("MMM-TriviaQOTD: Category: " + category);
                 
                 self.sendSocketNotification("TRIVIA_RESULT", {
                     question: question,
-                    answer: answer
+                    answer: answer,
+                    category: category
                 });
             } else {
-                console.error("MMM-TriviaQOTD: Could not parse trivia from page");
-                console.log("MMM-TriviaQOTD: Content preview: " + content.substring(0, 500));
+                console.error("MMM-TriviaQOTD: No trivia data in response");
                 
-                // Try to send cached data if available
+                // Use cached data if available
                 if (self.cache.question) {
                     console.log("MMM-TriviaQOTD: Using stale cache");
                     self.sendSocketNotification("TRIVIA_RESULT", {
                         question: self.cache.question,
-                        answer: self.cache.answer
+                        answer: self.cache.answer,
+                        category: self.cache.category
                     });
                 } else {
-                    self.sendSocketNotification("TRIVIA_ERROR", "Could not parse trivia content");
+                    self.sendSocketNotification("TRIVIA_ERROR", "No trivia data available");
                 }
             }
         })
@@ -112,7 +102,8 @@ module.exports = NodeHelper.create({
                 console.log("MMM-TriviaQOTD: Using stale cache due to error");
                 self.sendSocketNotification("TRIVIA_RESULT", {
                     question: self.cache.question,
-                    answer: self.cache.answer
+                    answer: self.cache.answer,
+                    category: self.cache.category
                 });
             } else {
                 self.sendSocketNotification("TRIVIA_ERROR", error.message);
